@@ -59,13 +59,12 @@ app.post('/urls/:shortURL/delete', (req, res) => {
 
 
 app.post('/urls/:shortURL', (req, res) => {
-  console.log('hello, testing123');
-  console.log(req.params.shortURL)
-  console.log(req.params);
-  console.log(req.body);
   urlDatabase[req.params.shortURL] = req.body.longURL;
-  
   res.redirect('/urls');
+});
+
+app.post('/urls/:shortURL/edit', (req, res) => {
+  res.redirect(`/urls/${req.params.shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
