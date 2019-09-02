@@ -25,10 +25,22 @@ const urlDatabase = {
 app.post("/urls", (req, res) => {
   const generatedShortURL = generateRandomString();
   urlDatabase[generatedShortURL] = req.body.longURL;
-  console.log(req.body);  // Log the POST request body to the console
-  res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  // console.log(req.body);  // Log the POST request body to the console
+  res.redirect(`/urls/${generatedShortURL}`);
+  // res.send("Ok");         // Respond with 'Ok' (we will replace this)
 });
 
+app.get('/u/:shortURL', (req, res) => {
+  console.log(req.params);
+
+  if (req.params.shortURL === 'undefined') {
+    res.redirect("/urls");
+    return;
+  }
+
+  const longURL = urlDatabase[req.params.shortURL];
+  res.redirect(longURL);
+})
 
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
