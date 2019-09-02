@@ -25,17 +25,31 @@ const urlDatabase = {
 };
 
 app.post("/urls", (req, res) => {
+  let isURL = false;
   for (let key in urlDatabase) {
     if (req.body.longURL === urlDatabase[key]) {
-      return res.redirect("/urls/new");
+      // console.log(templateVars);
+      isURL = true;
+      break;
     }
   }
 
-  const generatedShortURL = generateRandomString();
-  urlDatabase[generatedShortURL] = req.body.longURL;
-  res.redirect(`/urls/${generatedShortURL}`);
-  // console.log(req.body);  // Log the POST request body to the console
-  // res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  if (isURL) {
+    let templateVars = { urls: urlDatabase, errorMessage: true};
+    res.render("urls_index", templateVars);
+
+  } else {
+    
+    if (req.body.longURL.slice(0, 8) !== 'https://') {
+      req.body.longURL = 'https://' + req.body.longURL 
+    }
+
+    const generatedShortURL = generateRandomString();
+    urlDatabase[generatedShortURL] = req.body.longURL;
+    res.redirect(`/urls/${generatedShortURL}`);
+    // console.log(req.body);  // Log the POST request body to the console
+    // res.send("Ok");         // Respond with 'Ok' (we will replace this)
+  }
 });
 
 
@@ -49,7 +63,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase };
+  let templateVars = { urls: urlDatabase, errorMessage: false };
   res.render("urls_index", templateVars);
 });
 
