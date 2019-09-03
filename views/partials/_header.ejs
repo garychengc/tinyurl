@@ -18,13 +18,13 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
-    <% if(username) { %>
+    <% if(user_id) { %>
     <form type="text" method="POST" action="/logout">
       <h3
         class="nav-item nav-link"
         style="display: inline; color: black; font-size: 20px; vertical-align: middle"
       >
-        Logged In As: <%= username %> :D
+        Logged In As: <%= user_id.email %> :D
       </h3>
       <button
         type="submit"
@@ -38,15 +38,27 @@
     <form type="text" method="POST" action="/login">
       <input
         class="form-control"
-        placeholder="Username"
         type="text"
         name="username"
         style="display: inline; width: 200px"
       />
-      <button type="submit" class="btn btn-info" style="display: inline">
+      <button
+        type="submit"
+        class="btn btn-info border"
+        style="vertical-align: middle"
+      >
         Sign-In
       </button>
     </form>
+    <a href="/register">
+      <button
+        type="submit"
+        class="btn btn-info border"
+        style="vertical-align: middle"
+      >
+        Register
+      </button>
+    </a>
     <% } %>
   </nav>
 </header>

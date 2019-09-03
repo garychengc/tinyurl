@@ -39,12 +39,16 @@
             <td><%= urls[url] %></td>
             <td>
               <form method="POST" action="/urls/<%= url %>/edit">
-                <button type="submit" class="btn btn-outline-primary">Edit</button>
+                <button type="submit" class="btn btn-outline-primary">
+                  Edit
+                </button>
               </form>
             </td>
             <td>
               <form method="POST" action="/urls/<%= url %>/delete">
-                <button type="submit" class="btn btn-outline-danger">Delete</button>
+                <button type="submit" class="btn btn-outline-danger">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
@@ -72,10 +76,12 @@
       const buttonEvent = document.querySelector("#button");
       const message = document.querySelector("#message");
 
-      buttonEvent.addEventListener("click", () => {
-        buttonEvent.remove();
-        message.remove();
-      });
+      if (buttonEvent && message) {
+        buttonEvent.addEventListener("click", () => {
+          buttonEvent.remove();
+          message.remove();
+        });
+      }
     </script>
   </body>
 </html>
