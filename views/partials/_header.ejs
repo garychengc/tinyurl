@@ -18,46 +18,39 @@
         <a class="nav-item nav-link" href="/urls/new">Create New URL</a>
       </div>
     </div>
+
     <% if(user_id) { %>
-    <form type="text" method="POST" action="/logout">
-      <h3
+      <h4
         class="nav-item nav-link"
-        style="display: inline; color: black; font-size: 20px; vertical-align: middle"
+        style="color: black; font-size: 20px; vertical-align: middle"
       >
         Logged In As: <%= user_id.email %> :D
-      </h3>
-      <button
-        type="submit"
-        class="nav-item nav-link btn btn-info"
-        style="display: inline"
-      >
-        Sign-Out
-      </button>
-    </form>
+      </h4>
+      <a
+      href="/logout"
+      class="btn btn-info border"
+      style="vertical-align: middle"
+      role="button"
+    >
+      Sign-Out
+    </a>
     <% } else { %>
-    <form type="text" method="POST" action="/login">
-      <input
-        class="form-control"
-        type="text"
-        name="username"
-        style="display: inline; width: 200px"
-      />
-      <button
-        type="submit"
-        class="btn btn-info border"
-        style="vertical-align: middle"
-      >
-        Sign-In
-      </button>
-    </form>
-    <a href="/register">
-      <button
-        type="submit"
-        class="btn btn-info border"
-        style="vertical-align: middle"
-      >
-        Register
-      </button>
+      <a
+      href="/login"
+      class="btn btn-info border"
+      style="vertical-align: middle"
+      role="button"
+    >
+      Sign-In
+    </a>
+
+    <a
+      href="/register"
+      class="btn btn-info border"
+      style="vertical-align: middle"
+      role="button"
+    >
+      Register
     </a>
     <% } %>
   </nav>

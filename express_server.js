@@ -93,7 +93,13 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
-app.post('/logout', (req, res) => {
+app.get('/login', (req, res) => {
+  let templateVars = { urls: urlDatabase, errorMessage: true, user_id: users[req.cookies['user_id']]};
+  res.render('login', templateVars);
+});
+
+
+app.get('/logout', (req, res) => {
   res.clearCookie('user_id');
   res.redirect('/urls');
 });
