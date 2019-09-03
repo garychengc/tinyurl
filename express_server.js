@@ -21,11 +21,23 @@ function generateRandomString() {
   return string;
 };
 
+//checking if an email address exists
+const isEmailExisting = (emailAddress) => {
+  for (let id in users) {
+    if (emailAddress === users[id].email) {
+      return true;
+    }
+  }
+}
+
 
 const urlDatabase = {
   b2xVn2: "https://www.lighthouselabs.ca",
   "9sm5xK": "https://www.google.com"
 };
+
+
+const users = {};
 
 app.post("/urls", (req, res) => {
   let urlExist = false;
@@ -80,7 +92,6 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  console.log(req.body);
   res.cookie('username', req.body.username);
   res.redirect('/urls');
 });
@@ -90,6 +101,21 @@ app.post('/logout', (req, res) => {
   res.redirect('/urls');
 });
 
+app.get('/register', (req, res) => {
+  let templateVars = { urls: urlDatabase, errorMessage: true, username: req.cookies['username']};
+  res.render('register', templateVars);
+});
+
+app.post('/register', (req, res) => {
+  if (req.body.email === '' || req.body.password === '' || isEmailExisting(req.body.email)) {
+    res.status(400).send ( '400 status code' );
+  }
+  
+  const userID = generateRandomString();
+  users[userID] = {id: userID, email: req.body.email, password: req.body.password};
+  res.cookie('username', userID);
+  res.redirect('/urls');
+});
 
 
 app.get("/urls", (req, res) => {
