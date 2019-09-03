@@ -20,21 +20,21 @@ function generateRandomString() {
 
 
 const urlDatabase = {
-  b2xVn2: "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b2xVn2: "https://www.lighthouselabs.ca",
+  "9sm5xK": "https://www.google.com"
 };
 
 app.post("/urls", (req, res) => {
-  let isURL = false;
+  let urlExist = false;
   for (let key in urlDatabase) {
     if (req.body.longURL === urlDatabase[key]) {
       // console.log(templateVars);
-      isURL = true;
+      urlExist = true;
       break;
     }
-  }
+  } 
 
-  if (isURL) {
+  if (urlExist) {
     let templateVars = { urls: urlDatabase, errorMessage: true};
     res.render("urls_index", templateVars);
 

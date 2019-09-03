@@ -24,7 +24,7 @@
         <h2>EDIT</h2>
         <form method="POST" action="/urls/<%= shortURL %>">
           <p style='display:inline'>New URL</p>
-          <input class="form-control" type="text" name="longURL" style="width: 300px; margin: auto; margin-bottom: 10px; display: inline"></input>
+          <input class="form-control" value='<%= longURL %>' type="text" name="longURL" style="width: 300px; margin: auto; margin-bottom: 10px; display: inline"></input>
           <button type='submit' class="btn btn-primary">Update</button>
         </form>
       </div>
