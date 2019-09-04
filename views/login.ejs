@@ -13,13 +13,13 @@
   <body>
     <% include partials/_header %>
     <main style="margin: 1em;">
-      <h3>Login Info</h3>
+      <h3>Login</h3>
       <form class="form-inline" action="/login" method="POST">
-        <div class="form-group mb-2">
-          <label for="email">Enter Your Email Address:</label>
-          <input class="form-control" type="email" name="email" style="width: 200px; margin: 0.5em">
-          <label for="password">Enter Your Password:</label>
-          <input class="form-control" type="password" name="password" style="width: 200px; margin: 0.5em;">
+        <div class="form-group mb-2" style='display: block'>
+          <label style='display: block' for="email">Email Address:</label>
+          <input class="form-control" type="email" placeholder='Enter Email' name="email" style="width: 200px; margin-bottom: 20px; display: block">
+          <label style='display: block' for="password">Password:</label>
+          <input class="form-control" type="password" placeholder='Enter Email' name="password" style="width: 200px; margin-bottom: 20px; display: block">
           <button type="submit" class="btn btn-primary">Login</button>
         </div>
       </form>

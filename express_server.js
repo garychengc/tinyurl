@@ -38,8 +38,8 @@ const checkEmailPassword = (email, password) => {
 };
 
 const urlDatabase = {
-  b2xVn2: "https://www.lighthouselabs.ca",
-  "9sm5xK": "https://www.google.com"
+  b2xVn2: "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
 };
 
 const users = {};
@@ -62,8 +62,8 @@ app.post("/urls", (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    if (req.body.longURL.slice(0, 8) !== "https://") {
-      req.body.longURL = "https://" + req.body.longURL;
+    if (req.body.longURL.slice(0, 7) !== "http://") {
+      req.body.longURL = "http://" + req.body.longURL;
     }
     const generatedShortURL = generateRandomString();
     urlDatabase[generatedShortURL] = req.body.longURL;
@@ -115,7 +115,7 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars);
 });
 
-app.get("/logout", (req, res) => {
+app.post("/logout", (req, res) => {
   res.clearCookie("user_id");
   res.redirect("/urls");
 });

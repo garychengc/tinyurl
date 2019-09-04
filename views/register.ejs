@@ -15,12 +15,12 @@
     <main style="margin: 1em;">
       <h3>Create a New Account</h3>
       <form class="form-inline" action="/register" method="POST">
-        <div class="form-group mb-2">
-          <label for="email">Enter an Email Address:</label>
-          <input class="form-control" type="email" name="email" style="width: 200px; margin: 0.5em">
-          <label for="password">Enter a Password:</label>
-          <input class="form-control" type="password" name="password" style="width: 200px; margin: 0.5em;">
-          <button type="submit" class="btn btn-primary">Submit</button>
+        <div class="form-group mb-2" style='display:block'>
+          <label style='display: block' for="email">Email Address:</label>
+          <input class="form-control" type="email" placeholder='Enter Email' name="email" style="width: 200px; margin-bottom: 20px; display: block"> 
+          <label style='display: block' for="password">Password:</label>
+          <input class="form-control" type="password" placeholder='Enter Email' name="password" style="width: 200px; margin-bottom: 20px; display: block">
+          <button type="submit" class="btn btn-primary">Register</button>
         </div>
       </form>
     </main>
