@@ -3,6 +3,7 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
+const bcrypt = require('bcrypt');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -32,7 +33,7 @@ const isEmailExisting = emailAddress => {
 //check if the email & password match with the existing ones.
 const checkEmailPassword = (email, password) => {
   for (let id in users) {
-    if (email === users[id].email && password === users[id].password) {
+    if (email === users[id].email && bcrypt.compareSync(password, users[id].password)) {
       return id;
     }
   }
@@ -156,11 +157,13 @@ app.post("/register", (req, res) => {
       );
   } else {
     const userID = generateRandomString();
+    const bcryptPassword = bcrypt.hashSync(req.body.password, 10);
     users[userID] = {
       id: userID,
       email: req.body.email,
-      password: req.body.password
+      password: bcryptPassword,
     };
+    console.log(users);
     res.cookie("user_id", userID);
     res.redirect("/urls");
   }
@@ -177,13 +180,13 @@ app.get("/register", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const urlsData = urlsForUser(req.cookies["user_id"]);
-  console.log(urlsData);
+  // console.log(urlsData);
   let templateVars = {
     urls: urlsData,
     errorMessage: false,
     user_id: req.cookies["user_id"],
   };
-  console.log(templateVars.user_id);
+  // console.log(templateVars.user_id);
   // console.log(templateVars.urls)
   res.render("urls_index", templateVars);
 });
