@@ -20,7 +20,7 @@ function generateRandomString() {
   return string;
 }
 
-//checking if an email address exists
+//check if an email address exists
 const isEmailExisting = emailAddress => {
   for (let id in users) {
     if (emailAddress === users[id].email) {
@@ -29,6 +29,7 @@ const isEmailExisting = emailAddress => {
   }
 };
 
+//check if the email & password match with the existing ones.
 const checkEmailPassword = (email, password) => {
   for (let id in users) {
     if (email === users[id].email && password === users[id].password) {
@@ -48,7 +49,6 @@ app.post("/urls", (req, res) => {
   let urlExist = false;
   for (let key in urlDatabase) {
     if (req.body.longURL === urlDatabase[key]) {
-      // console.log(templateVars);
       urlExist = true;
       break;
     }
@@ -76,20 +76,19 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
+app.post("/urls/:shortURL/edit", (req, res) => {
+  res.redirect(`/urls/${req.params.shortURL}`);
+});
+
 app.post("/urls/:shortURL", (req, res) => {
   urlDatabase[req.params.shortURL] = req.body.longURL;
   res.redirect("/urls");
-});
-
-app.post("/urls/:shortURL/edit", (req, res) => {
-  res.redirect(`/urls/${req.params.shortURL}`);
 });
 
 app.get("/u/:shortURL", (req, res) => {
   if (req.params.shortURL === "undefined") {
     return res.redirect("/urls");
   }
-
   const longURL = urlDatabase[req.params.shortURL];
   res.redirect(longURL);
 });
@@ -120,15 +119,6 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-app.get("/register", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    errorMessage: true,
-    user_id: users[req.cookies["user_id"]]
-  };
-  res.render("register", templateVars);
-});
-
 app.post("/register", (req, res) => {
   if (
     req.body.email === "" ||
@@ -150,6 +140,15 @@ app.post("/register", (req, res) => {
     res.cookie("user_id", userID);
     res.redirect("/urls");
   }
+});
+
+app.get("/register", (req, res) => {
+  let templateVars = {
+    urls: urlDatabase,
+    errorMessage: true,
+    user_id: users[req.cookies["user_id"]]
+  };
+  res.render("register", templateVars);
 });
 
 app.get("/urls", (req, res) => {
