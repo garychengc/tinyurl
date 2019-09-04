@@ -42,10 +42,13 @@ const checkEmailPassword = (email, password) => {
 const urlsForUser = user_id => {
   let urlsData = {};
   for (let key in urlDatabase) {
-    if (users[user_id] === urlDatabase[key].userID) {
-      urlsData[key] = urlDatabase[key];
+    if (user_id === urlDatabase[key].userID) {
+      // console.log(user_id);
+      // console.log(urlDatabase[key].userID);
+      urlsData[key] = urlDatabase[key].longURL;
     }
   }
+  console.log(urlsData);
   return urlsData;
 };
 
@@ -79,19 +82,31 @@ app.post("/urls", (req, res) => {
     const generatedShortURL = generateRandomString();
     urlDatabase[generatedShortURL] = {
       longURL: req.body.longURL,
-      userID: users[req.cookies["user_id"]]
+      userID: users[req.cookies["user_id"]].id,
     };
     res.redirect(`/urls/${generatedShortURL}`);
   }
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  delete urlDatabase[req.params.shortURL];
-  res.redirect("/urls");
+
+  if (req.cookies['user_id'] !== urlDatabase[req.params.shortURL].userID) {
+    res.status(403).send('Please login with the correct user account');
+  } else {
+    delete urlDatabase[req.params.shortURL];
+    res.redirect("/urls");
+  }
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  res.redirect(`/urls/${req.params.shortURL}`);
+  // console.log(req.params.shortURL);
+  // console.log(urlDatabase[req.params.shortURL]);
+  // console.log(urlDatabase);
+  if (req.cookies['user_id'] !== urlDatabase[req.params.shortURL].userID) {
+    res.status(403).send('Please login with the correct user account');
+  } else {
+    res.redirect(`/urls/${req.params.shortURL}`);
+  }
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -162,12 +177,14 @@ app.get("/register", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const urlsData = urlsForUser(req.cookies["user_id"]);
-
+  console.log(urlsData);
   let templateVars = {
     urls: urlsData,
     errorMessage: false,
-    user_id: users[req.cookies["user_id"]]
+    user_id: req.cookies["user_id"],
   };
+  console.log(templateVars.user_id);
+  // console.log(templateVars.urls)
   res.render("urls_index", templateVars);
 });
 
@@ -185,15 +202,14 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+
   res.redirect("/urls");
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const urlsData = urlsForUser(req.cookies['user_id']);
-  console.log(urlsData);
-
-  if (!users[req.cookies["user_id"]] || !urlsData[req.params.shortURL]) {
+  // console.log(urlsData);
+  // console.log(users);
+  if (urlDatabase[req.params.shortURL].userID !== req.cookies['user_id']) {
     res.status(403).send('Please login with the correct user account.');
   }
 
@@ -202,6 +218,8 @@ app.get("/urls/:shortURL", (req, res) => {
     longURL: urlDatabase[req.params.shortURL].longURL,
     user_id: users[req.cookies["user_id"]]
   };
+  // console.log(templateVars.user_id);
+  // console.log(urlDatabase);
   res.render("urls_show", templateVars);
 });
 
