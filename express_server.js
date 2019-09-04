@@ -161,12 +161,16 @@ app.get("/urls", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  let templateVars = {
-    urls: urlDatabase,
-    errorMessage: false,
-    user_id: users[req.cookies["user_id"]]
-  };
-  res.render("urls_new", templateVars);
+  if (users[req.cookies["user_id"]]) {
+    let templateVars = {
+      urls: urlDatabase,
+      errorMessage: false,
+      user_id: users[req.cookies["user_id"]]
+    };
+    res.render("urls_new", templateVars);
+  } else {
+    res.redirect("/login");
+  }
 });
 
 app.get("/urls/:shortURL", (req, res) => {
