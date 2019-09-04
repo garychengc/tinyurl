@@ -17,8 +17,12 @@
     <title>TinyApp</title>
   </head>
   <body>
-    <% include ./partials/_header %> <% if (errorMessage) { %> <% include
-    partials/_errorMessage %> <% } %>
+    <% include ./partials/_header %> 
+    <% if (errorMessage) { %> 
+      <% include partials/_errorMessage %> 
+      <% } %>
+    
+    <% if(user_id) { %>
 
     <main style="margin: 1em;">
       <br />
@@ -36,7 +40,7 @@
           <% for(let url in urls) { %>
           <tr>
             <td><%= url %></td>
-            <td><%= urls[url] %></td>
+            <td><%= urls[url].longURL %></td>
             <td>
               <form method="POST" action="/urls/<%= url %>/edit">
                 <button type="submit" class="btn btn-outline-primary">
@@ -55,6 +59,11 @@
           <% } %>
         </tbody>
       </table>
+      <% } else { %>
+        <main style="margin: 1em;">
+          <br />
+          <h3 class="text-info">Please Login or Register First.</h3>
+      <% } %>
     </main>
     <!-- Bootstrap JS -->
     <script

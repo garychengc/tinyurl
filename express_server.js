@@ -38,6 +38,17 @@ const checkEmailPassword = (email, password) => {
   }
 };
 
+//find the urls created by a specific user
+const urlsForUser = user_id => {
+  let urlsData = {};
+  for (let key in urlDatabase) {
+    if (users[user_id] === urlDatabase[key].userID) {
+      urlsData[key] = urlDatabase[key];
+    }
+  }
+  return urlsData;
+};
+
 const urlDatabase = {
   b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
   i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
@@ -66,11 +77,6 @@ app.post("/urls", (req, res) => {
       req.body.longURL = "http://" + req.body.longURL;
     }
     const generatedShortURL = generateRandomString();
-    console.log(urlDatabase);
-    console.log(generatedShortURL);
-    console.log(req.cookies['user_id']);
-    console.log(users[req.cookies["user_id"]]);
-
     urlDatabase[generatedShortURL] = {
       longURL: req.body.longURL,
       userID: users[req.cookies["user_id"]]
@@ -86,11 +92,6 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 
 app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect(`/urls/${req.params.shortURL}`);
-});
-
-app.post("/urls/:shortURL", (req, res) => {
-  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
-  res.redirect("/urls");
 });
 
 app.get("/u/:shortURL", (req, res) => {
@@ -160,12 +161,7 @@ app.get("/register", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  let urlsData = {};
-  for (let key in urlDatabase) {
-    if (users[req.cookies["user_id"]] === urlDatabase[key].userID) {
-      urlsData[key] = urlDatabase[key];
-    }
-  }
+  const urlsData = urlsForUser(req.cookies["user_id"]);
 
   let templateVars = {
     urls: urlsData,
@@ -188,7 +184,19 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+app.post("/urls/:shortURL", (req, res) => {
+  urlDatabase[req.params.shortURL].longURL = req.body.longURL;
+  res.redirect("/urls");
+});
+
 app.get("/urls/:shortURL", (req, res) => {
+  const urlsData = urlsForUser(req.cookies['user_id']);
+  console.log(urlsData);
+
+  if (!users[req.cookies["user_id"]] || !urlsData[req.params.shortURL]) {
+    res.status(403).send('Please login with the correct user account.');
+  }
+
   let templateVars = {
     shortURL: req.params.shortURL,
     longURL: urlDatabase[req.params.shortURL].longURL,
