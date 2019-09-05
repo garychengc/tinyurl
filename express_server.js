@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
 const { getUserByEmail } = require("./helpers");
+const methodOverride = require('method-override');
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -14,6 +15,7 @@ app.use(
     keys: ["id"]
   })
 );
+app.use(methodOverride('_method'));
 
 //Functions ------------------------------------------------------
 //generate a random shortURL
@@ -66,7 +68,7 @@ const urlDatabase = {
 //Express Methods -----------------------------------------------
 
 //URLs - delete
-app.post("/urls/:shortURL/delete", (req, res) => {
+app.delete("/urls/:shortURL", (req, res) => {
   if (req.session["user_id"] !== urlDatabase[req.params.shortURL].userID) {
     res.status(403).send("Please login with the correct user account");
   } else {
@@ -76,7 +78,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 //URLs - edit
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.put("/urls/:shortURL", (req, res) => {
   if (req.session["user_id"] !== urlDatabase[req.params.shortURL].userID) {
     res.status(403).send("Please login with the correct user account");
   } else {
