@@ -3,13 +3,11 @@ const app = express();
 const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
-// const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
 const { getUserByEmail } = require("./helpers");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
-// app.use(cookieParser());
 app.use(
   cookieSession({
     name: "user_id",
@@ -33,12 +31,6 @@ function generateRandomString() {
 //check if an email address exists ----?
 const isEmailExisting = emailAddress => {
   return getUserByEmail(emailAddress, users) ? true : false;
-
-  // for (let id in users) {
-  //   if (emailAddress === users[id].email) {
-  //     return true;
-  //   }
-  // }
 };
 
 //check if the email & password match with the existing ones
