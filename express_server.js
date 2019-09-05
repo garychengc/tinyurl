@@ -98,7 +98,6 @@ app.post("/login", (req, res) => {
   const ID = checkEmailPassword(req.body.email, req.body.password);
   if (ID) {
     req.session.user_id = ID;
-    // res.cookie("user_id", ID);
     return res.redirect("/urls");
   }
 
