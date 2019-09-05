@@ -4,11 +4,16 @@ const PORT = 8080;
 const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
-const { getUserByEmail } = require("./helpers");
-const methodOverride = require('method-override');
-let count = {};
-let visitors = [];
-let everyVisit = [];
+const {
+  generateRandomString,
+  isEmailExisting,
+  checkEmailPassword,
+  urlsForUser
+} = require("./helpers");
+const methodOverride = require("method-override");
+const count = {};
+const visitors = [];
+const everyVisit = [];
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -18,58 +23,13 @@ app.use(
     keys: ["id"]
   })
 );
-app.use(methodOverride('_method'));
-
-//Functions ------------------------------------------------------
-//generate a random shortURL
-function generateRandomString() {
-  let string = "";
-  const alphanumeric =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-  for (let i = 0; i < 6; ++i) {
-    string +=
-      alphanumeric[Math.floor(Math.random() * (alphanumeric.length - 1))];
-  }
-  return string;
-}
-
-//check if an email address exists ----?
-const isEmailExisting = emailAddress => {
-  return getUserByEmail(emailAddress, users) ? true : false;
-};
-
-//check if the email & password match with the existing ones
-const checkEmailPassword = (email, password) => {
-  for (let id in users) {
-    if (
-      email === users[id].email &&
-      bcrypt.compareSync(password, users[id].password)
-    ) {
-      return id;
-    }
-  }
-};
-
-//find the urls created by a specific user
-const urlsForUser = user_id => {
-  let urlsData = {};
-  for (let key in urlDatabase) {
-    if (user_id === urlDatabase[key].userID) {
-      urlsData[key] = urlDatabase[key].longURL;
-    }
-  }
-  return urlsData;
-};
+app.use(methodOverride("_method"));
 
 //Variables ---------------------------------------------------
 const users = {};
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "aJ48lW" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "aJ48lW" }
-};
+const urlDatabase = {};
 
 //Express Methods -----------------------------------------------
-
 //URLs - delete
 app.delete("/urls/:shortURL", (req, res) => {
   if (req.session["user_id"] !== urlDatabase[req.params.shortURL].userID) {
@@ -97,9 +57,9 @@ app.get("/u/:shortURL", (req, res) => {
 
   if (urlDatabase[req.params.shortURL]) {
     if (!visitors.includes(req.session["user_id"])) {
-      visitors.push(req.session['user_id']); 
+      visitors.push(req.session["user_id"]);
     }
-    count[req.params.shortURL] ++;
+    count[req.params.shortURL]++;
     const now = new Date();
     const hours = now.getHours();
     const minutes = now.getMinutes();
@@ -108,24 +68,29 @@ app.get("/u/:shortURL", (req, res) => {
     const year = now.getFullYear();
 
     if (minutes < 10) {
-      everyVisit.push([req.session["user_id"], `${hours - 4}:0${minutes} on ${month}/${date}/${year}`]);
+      everyVisit.push([
+        req.session["user_id"],
+        `${hours - 4}:0${minutes} on ${month}/${date}/${year}`
+      ]);
     } else {
-      everyVisit.push([req.session["user_id"], `${hours - 4}:${minutes} on ${month}/${date}/${year}`]);
+      everyVisit.push([
+        req.session["user_id"],
+        `${hours - 4}:${minutes} on ${month}/${date}/${year}`
+      ]);
     }
     res.redirect(urlDatabase[req.params.shortURL].longURL);
   } else {
     return res
-    .status(404)
-    .send("Website is not found. Please double check the shortURL. Thank you.");
-    // res.redirect('/urls');
+      .status(404)
+      .send(
+        "Website is not found. Please double check the shortURL. Thank you."
+      );
   }
-  // const longURL = urlDatabase[req.params.shortURL].longURL;
-  
 });
 
 //Login
 app.post("/login", (req, res) => {
-  const ID = checkEmailPassword(req.body.email, req.body.password);
+  const ID = checkEmailPassword(req.body.email, req.body.password, users);
   if (ID) {
     req.session.user_id = ID;
     return res.redirect("/urls");
@@ -156,7 +121,7 @@ app.post("/register", (req, res) => {
   if (
     req.body.email === "" ||
     req.body.password === "" ||
-    isEmailExisting(req.body.email)
+    isEmailExisting(req.body.email, users)
   ) {
     res
       .status(400)
@@ -196,8 +161,9 @@ app.post("/urls", (req, res) => {
   }
 
   if (urlExist) {
+    const urlsData = urlsForUser(req.session["user_id"], urlDatabase);
     let templateVars = {
-      urls: urlDatabase,
+      urls: urlsData,
       errorMessage: true,
       user_id: users[req.session["user_id"]]
     };
@@ -217,7 +183,7 @@ app.post("/urls", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const urlsData = urlsForUser(req.session["user_id"]);
+  const urlsData = urlsForUser(req.session["user_id"], urlDatabase);
   let templateVars = {
     urls: urlsData,
     errorMessage: false,
@@ -259,11 +225,8 @@ app.get("/urls/:shortURL", (req, res) => {
       user_id: users[req.session["user_id"]],
       count: count,
       visitors: visitors,
-      everyVisit: everyVisit,
+      everyVisit: everyVisit
     };
-    console.log(count);
-    console.log(visitors);
-    console.log(everyVisit);
     res.render("urls_show", templateVars);
   }
 });
@@ -273,7 +236,7 @@ app.get("/", (req, res) => {
   if (req.session["user_id"]) {
     res.redirect("/urls");
   } else {
-    res.redirect('/login');
+    res.redirect("/login");
   }
 });
 
