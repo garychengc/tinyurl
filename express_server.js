@@ -6,6 +6,9 @@ const cookieSession = require("cookie-session");
 const bcrypt = require("bcrypt");
 const { getUserByEmail } = require("./helpers");
 const methodOverride = require('method-override');
+let count = {};
+let visitors = [];
+let everyVisit = [];
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -91,8 +94,33 @@ app.get("/u/:shortURL", (req, res) => {
   if (req.params.shortURL === "undefined") {
     return res.redirect("/urls");
   }
-  const longURL = urlDatabase[req.params.shortURL].longURL;
-  res.redirect(longURL);
+
+  if (urlDatabase[req.params.shortURL]) {
+    if (!visitors.includes(req.session["user_id"])) {
+      visitors.push(req.session['user_id']); 
+    }
+    count[req.params.shortURL] ++;
+    const now = new Date();
+    const hours = now.getHours();
+    const minutes = now.getMinutes();
+    const month = now.getMonth() + 1;
+    const date = now.getDate();
+    const year = now.getFullYear();
+
+    if (minutes < 10) {
+      everyVisit.push([req.session["user_id"], `${hours - 4}:0${minutes} on ${month}/${date}/${year}`]);
+    } else {
+      everyVisit.push([req.session["user_id"], `${hours - 4}:${minutes} on ${month}/${date}/${year}`]);
+    }
+    res.redirect(urlDatabase[req.params.shortURL].longURL);
+  } else {
+    return res
+    .status(404)
+    .send("Website is not found. Please double check the shortURL. Thank you.");
+    // res.redirect('/urls');
+  }
+  // const longURL = urlDatabase[req.params.shortURL].longURL;
+  
 });
 
 //Login
@@ -183,6 +211,7 @@ app.post("/urls", (req, res) => {
       longURL: req.body.longURL,
       userID: users[req.session["user_id"]].id
     };
+    count[generatedShortURL] = 0;
     res.redirect(`/urls/${generatedShortURL}`);
   }
 });
@@ -227,8 +256,14 @@ app.get("/urls/:shortURL", (req, res) => {
     let templateVars = {
       shortURL: req.params.shortURL,
       longURL: urlDatabase[req.params.shortURL].longURL,
-      user_id: users[req.session["user_id"]]
+      user_id: users[req.session["user_id"]],
+      count: count,
+      visitors: visitors,
+      everyVisit: everyVisit,
     };
+    console.log(count);
+    console.log(visitors);
+    console.log(everyVisit);
     res.render("urls_show", templateVars);
   }
 });

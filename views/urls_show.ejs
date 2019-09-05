@@ -21,12 +21,23 @@
         <p class="card-text">
           Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a>
         </p>
+        <p>
+          View_Count: <%= count[shortURL] %>
+          || Number of Different Visitors: <%= visitors.length %>
+        </p>
         <h2>EDIT</h2>
         <form method="POST" action="/urls/<%= shortURL %>">
           <p style='display:inline'>New URL</p>
           <input class="form-control" value='<%= longURL %>' type="text" name="longURL" style="width: 300px; margin: auto; margin-bottom: 10px; display: inline"></input>
           <button type='submit' class="btn btn-primary">Update</button>
         </form>
+      </div>
+
+      <% for (let eachVisit of everyVisit) { %>
+      <div>
+        User: [<%= eachVisit[0] %>] visited [<%= longURL %>] with shortURL: [<%= shortURL %>] at <%= eachVisit[1] %>
+      </div>
+      <% } %>
       </div>
       <div class="card-footer text-muted"></div>
     </div>
