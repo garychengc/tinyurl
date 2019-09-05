@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 // const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
+const getUserByEmail = require("./helpers");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -29,13 +30,15 @@ function generateRandomString() {
   return string;
 }
 
-//check if an email address exists
+//check if an email address exists ----?
 const isEmailExisting = emailAddress => {
-  for (let id in users) {
-    if (emailAddress === users[id].email) {
-      return true;
-    }
-  }
+  return getUserByEmail(emailAddress, users) ? true : false;
+
+  // for (let id in users) {
+  //   if (emailAddress === users[id].email) {
+  //     return true;
+  //   }
+  // }
 };
 
 //check if the email & password match with the existing ones
@@ -55,22 +58,11 @@ const urlsForUser = user_id => {
   let urlsData = {};
   for (let key in urlDatabase) {
     if (user_id === urlDatabase[key].userID) {
-      // console.log(user_id);
-      // console.log(urlDatabase[key].userID);
       urlsData[key] = urlDatabase[key].longURL;
     }
   }
   return urlsData;
 };
-
-//helper function - look up user by their email
-// const getUserByEmail = (email, urlDatabase) => {
-//   for (let id in urlDatabase) {
-//     if (email === id.email) {
-//       return database[id];
-//     }
-//   }
-// };
 
 //Variables ---------------------------------------------------
 const users = {};
@@ -233,17 +225,19 @@ app.post("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL].userID !== req.session["user_id"]) {
+  if (
+    !urlDatabase[req.params.shortURL] ||
+    urlDatabase[req.params.shortURL].userID !== req.session["user_id"]
+  ) {
     res.status(403).send("Please login with the correct user account.");
+  } else {
+    let templateVars = {
+      shortURL: req.params.shortURL,
+      longURL: urlDatabase[req.params.shortURL].longURL,
+      user_id: users[req.session["user_id"]]
+    };
+    res.render("urls_show", templateVars);
   }
-
-  let templateVars = {
-    shortURL: req.params.shortURL,
-    longURL: urlDatabase[req.params.shortURL].longURL,
-    user_id: users[req.session["user_id"]]
-  };
-
-  res.render("urls_show", templateVars);
 });
 
 //Home Page - redirect to /urls
