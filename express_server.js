@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const cookieSession = require("cookie-session");
 // const cookieParser = require("cookie-parser");
 const bcrypt = require("bcrypt");
-const getUserByEmail = require("./helpers");
+const { getUserByEmail } = require("./helpers");
 
 app.set("view engine", "ejs");
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -242,7 +242,11 @@ app.get("/urls/:shortURL", (req, res) => {
 
 //Home Page - redirect to /urls
 app.get("/", (req, res) => {
-  res.redirect("/urls");
+  if (req.session["user_id"]) {
+    res.redirect("/urls");
+  } else {
+    res.redirect('/login');
+  }
 });
 
 //Show Server PORT
