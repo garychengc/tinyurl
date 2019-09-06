@@ -171,9 +171,9 @@ app.post("/urls", (req, res) => {
   } else {
     let URL = req.body.longURL.split("//");
     if (URL.length > 1) {
-      URL = URL.slice(1).join("");
+      URL = URL.slice(1).join("//");   //http://google.ca => [htp, google.ca//dsfsdf//sdfsdfdsf ]
     } else {
-      URL = URL.join("");
+      URL = URL.join("");  //google.ca => [google.ca] => 'google.ca'
     }
     URL = `http://${URL}`;
     const generatedShortURL = generateRandomString();
