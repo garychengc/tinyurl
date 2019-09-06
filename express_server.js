@@ -40,7 +40,7 @@ app.delete("/urls/:shortURL", (req, res) => {
   }
 });
 
-//URLs - edit method - Update a specific URL 
+//URLs - edit method - Update a specific URL
 app.put("/urls/:shortURL", (req, res) => {
   if (req.session["user_id"] !== urlDatabase[req.params.shortURL].userID) {
     res.status(403).send("Please login with the correct user account");
@@ -49,7 +49,7 @@ app.put("/urls/:shortURL", (req, res) => {
   }
 });
 
-//U - redirect to longURL with the corresponding shortURL 
+//U - redirect to longURL with the corresponding shortURL
 app.get("/u/:shortURL", (req, res) => {
   if (req.params.shortURL === "undefined") {
     return res.redirect("/urls");
@@ -169,12 +169,16 @@ app.post("/urls", (req, res) => {
     };
     res.render("urls_index", templateVars);
   } else {
-    if (req.body.longURL.slice(0, 7) !== "http://") {
-      req.body.longURL = `http://${req.body.longURL}`;
+    let URL = req.body.longURL.split("//");
+    if (URL.length > 1) {
+      URL = URL.slice(1).join("");
+    } else {
+      URL = URL.join("");
     }
+    URL = `http://${URL}`;
     const generatedShortURL = generateRandomString();
     urlDatabase[generatedShortURL] = {
-      longURL: req.body.longURL,
+      longURL: URL,
       userID: users[req.session["user_id"]].id
     };
     count[generatedShortURL] = 0;
