@@ -1,5 +1,6 @@
-//Functions ------------------------------------------------------
+const bcrypt = require("bcrypt");
 
+//Functions ------------------------------------------------------
 //generate a random shortURL
 const generateRandomString = () => {
   let string = "";
@@ -21,7 +22,7 @@ const getUserByEmail = (email, users) => {
   }
 };
 
-//check if an email address exists ----?
+//check if the email address exists in the userDatabase
 const isEmailExisting = (emailAddress, users) => {
   return getUserByEmail(emailAddress, users) ? true : false;
 };
