@@ -4,8 +4,9 @@
   "description": "",
   "main": "express_server.js",
   "scripts": {
-    "start": "./node_modules/.bin/nodemon -L express_server.js",
+    "start": "node express_server.js",
     "test": "mocha"
+
   },
   "repository": {
     "type": "git",
